@@ -1,0 +1,5 @@
+# CPython 3.10.19 on Windows x86-64, binary wheels from PyPI.
+numpy==2.2.6 --hash=sha256:f0fd6321b839904e15c46e0d257fdd101dd7f530fe03fd6359c1ea63738703f3
+numba==0.63.1 --hash=sha256:f8bba17421d865d8c0f7be2142754ebce53e009daba41c44cf6909207d1a8d7d
+llvmlite==0.46.0 --hash=sha256:e7a34d4aa6f9a97ee006b504be6d2b8cb7f755b80ab2f344dda1ef992f828559
+scipy==1.15.3 --hash=sha256:9d61e97b186a57350f6d6fd72640f9e99d5a4a2b8fbf4b9ee9a841eab327dc13

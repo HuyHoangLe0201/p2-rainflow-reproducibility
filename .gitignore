@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+/P2_Reviewer_Reproducibility/clean_verification*/
+/P2_Reviewer_Reproducibility/public_case_replay*/
+/P2_Reviewer_Reproducibility/audit.json
+/P2_Reviewer_Reproducibility/budget_thresholds.json
+/P2_Reviewer_Reproducibility/figures/replay_curves.json
+/P2_Reviewer_Reproducibility/figures/replay_curves.pdf

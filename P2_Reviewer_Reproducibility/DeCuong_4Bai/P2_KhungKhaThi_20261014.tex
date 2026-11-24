@@ -1,0 +1,236 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=22mm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage{amsmath,amssymb,amsthm,booktabs,longtable,array}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+\newtheorem{theorem}{Định lý}
+\newtheorem{proposition}[theorem]{Mệnh đề}
+\newtheorem{lemma}[theorem]{Bổ đề}
+\title{P2: Khung khả thi sau kiểm toán\\\large Mission-Damage-Constrained FCS-MPC with a Certified Backup Policy}
+\author{Bản nghiên cứu và giao thức kiểm chứng}
+\date{14/10/2026}
+\begin{document}
+\maketitle
+
+\textbf{Quyết định nghiên cứu.} Tiếp tục hướng ngân sách tổn thương theo hành trình, nhưng thay chứng minh khả thi nhiệt P2.23 và phát biểu có điều kiện cho P2.21. Bộ lọc bao nhiệt được giữ. Khung dưới đây là bản thay thế để phát triển bài, không phải xác nhận các kết quả 650 kW hay HIL. Các kiểm tra số mới chỉ kiểm tra toán và thuật toán trên mô hình minh họa.
+
+\section{Luận điểm và phạm vi bảo đảm}
+\textbf{Câu lõi.} We constrain model-based fatigue consumption over a finite traction mission through a backup policy on an augmented state, with thermal safety over a parameter box and recursive feasibility on a certified initial domain.
+
+Ba đóng góp cần tập trung: (C1) cận nhiệt theo từng thời điểm dưới bất định tham số và tổn hao; (C2) chứng chỉ tổn thương có bộ nhớ chu kỳ và giả thiết riêng; (C3) ràng buộc tổn thương còn lại với chính sách dự phòng, bao gồm yêu cầu phục vụ và đóng cắt. Việc dùng rainflow, tập bất biến hay chính sách dự phòng không tự nó là đóng góp mới; phần riêng phải nằm ở cấu trúc bộ biến đổi, miền khả thi và hiệu quả theo hành trình.
+
+Phân biệt ba phạm vi: an toàn nhiệt dưới mô hình Foster và hộp tham số; tổn thương theo mô hình mỏi dưới sai số tỉ lệ; và khả năng phục vụ theo mô hình nhu cầu đã khai báo. Không đồng nhất ba phạm vi này. Không tuyên bố bảo đảm tuổi thọ vật lý khi chưa hiệu chuẩn mô hình mỏi.
+
+\section{Phản ví dụ cho P2.23 và điều kiện nhiệt thay thế}
+Với một linh kiện và hai nhánh nhiệt, lấy nhiệt độ tương đối so với coolant cố định:
+\[
+\vartheta=(9,0),\quad a=(0.99,0.01),\quad R=(0.5,0.5),\quad p=1.
+\]
+Khi đó $\vartheta^+=(8.915,0.495)$ và $\sum_m\vartheta_m^+=9.41>9$, trong khi nhiệt độ xác lập tương đối bằng $\sum_m R_mp=1$. Vì vậy phép suy từ cận từng nhánh sang cận bằng cực đại của hai tổng trong P2.23 sai. Điều kiện ban đầu chỉ trên tổng nhiệt độ không đủ. Phản ví dụ dùng trạng thái không âm được phép trong giả thiết ban đầu; một giả thiết mạnh hơn về trạng thái có thể loại phản ví dụ nhưng phải được phát biểu và chứng minh riêng.
+
+\subsection{Bộ lọc bao giữ nguyên}
+Với $u_q=\hat p_q\ge0$ và $a_{jqm}\in[a^-_{jqm},a^+_{jqm}]\subset(0,1)$:
+\[
+U^+_{jqm}=\max\{a^-_{jqm}U_{jqm}+(1-a^-_{jqm})u_q,
+ a^+_{jqm}U_{jqm}+(1-a^+_{jqm})u_q\},
+\]
+\[
+\hat T_j=T_c+\sum_{q,m}R^+_{jqm}U_{jqm}.
+\]
+Nếu $U(0)\ge y(0)$, tổn hao thật không vượt $\hat p$ ở mỗi bước, và mô hình thật nằm trong hộp, quy nạp cho $U\ge y$ và $\hat T\ge T^\star$. Sai số dòng, điện áp, dead-time và nhiệt phụ thuộc nhiệt độ phải nằm trong cách dựng $\hat p$; bất định mạng nhiệt riêng không tự chặn các sai số này. Cận tại thời điểm lấy mẫu không tự bảo đảm an toàn giữa hai mẫu; cần một cận đỉnh trong chu kỳ hoặc giả thiết mô hình giữ mẫu có bảo đảm đó.
+
+\begin{proposition}[Tập bất biến theo từng nhánh]
+Chọn các cận cố định $b_{jqm}\ge0$, $T_c\le\bar T_c$ và biên $\Delta\ge0$ thỏa
+\[
+\bar T_c+\sum_{q,m}R^+_{jqm}b_{jqm}\le T_j^{\max}-\Delta
+\quad\text{cho mọi }j.
+\]
+Đặt $\mathcal Y_b=\{U:0\le U_{jqm}\le b_{jqm}\}$. Nếu tại mọi trạng thái xét chính sách dự phòng chọn được một hành động thỏa mọi ràng buộc phục vụ, đóng cắt và $0\le\hat p_q\le b_{jqm}$ cho mọi nhánh nối với $q$, thì cập nhật bao dưới hành động đó giữ $U^+\in\mathcal Y_b$ và giữ an toàn nhiệt tại các mẫu.
+\end{proposition}
+\begin{proof}
+Mỗi đối số trong cực đại là tổ hợp lồi của $U_{jqm}$ và $u_q$, đều thuộc $[0,b_{jqm}]$. Do đó $U^+_{jqm}\le b_{jqm}$. Nhân với $R^+\ge0$, cộng theo nhánh và dùng cận coolant cho kết luận.
+\end{proof}
+
+Đây là điều kiện đủ bảo thủ, không chứng minh rằng hành động như vậy luôn tồn tại ở mọi nhu cầu kéo. Dùng nó như phép kiểm đơn giản; miền hữu hạn theo hành trình bên dưới cho phép xét các trạng thái ngoài hộp này. Trong MPC chính, hành động ngoài hộp vẫn có thể được chọn nếu trạng thái kế tiếp có chứng chỉ hoàn thành hành trình. Nếu muốn chỉ dùng chứng chỉ bất biến hình hộp, phải ràng buộc trạng thái kế tiếp nằm trong hộp, không chỉ kiểm nhiệt độ một bước.
+
+\section{Trạng thái mở rộng và chính sách dự phòng}
+Đặt
+\[
+z_k=(x^e_k,U_k,x^{\rm nom}_k,\mathcal H_{1,k},\ldots,
+\mathcal H_{J,k},\sigma_k,\eta_k,k).
+\]
+$x^e$ chứa dòng, tốc độ và điện áp điểm trung tính cần cho ràng buộc; $U$ là trạng thái bao; $x^{\rm nom}$ là trạng thái mô hình nhiệt dùng tính mỏi; $\mathcal H_j$ chứa stack cực trị, hướng đi và mẫu cuối của rainflow; $\sigma$ chứa trạng thái khóa trước đó và lịch sử các cạnh trong cửa sổ đóng cắt; $\eta$ là trạng thái nhiệm vụ như quãng đường, tiến độ hay lượng phục vụ còn lại.
+
+Tổn thương đã quyết toán $C_{j,k}$ có thể lưu riêng hoặc đưa vào $z$. Không gọi chính sách chỉ phụ thuộc nhiệt độ và tổng $D$ là Markov nếu chưa lưu $\mathcal H$ và $\sigma$. Các đại lượng không đo trực tiếp phải được biểu diễn bằng cận hoặc tập trạng thái phù hợp; định lý dưới đây chỉ áp dụng cho mô hình cập nhật trạng thái được chứng nhận.
+
+\textbf{Ràng buộc phục vụ.} Chọn trước một trong hai chế độ: (A) bám tải với giới hạn sai số dòng/mô-men; hoặc (B) cho phép giảm tải với giới hạn trễ lịch trình và yêu cầu đầu cuối. Chế độ B phải lưu tiến độ nhiệm vụ trong $\eta$; điểm cuối thời gian cố định nhưng thiếu quãng đường không phải hoàn thành hành trình.
+
+\textbf{Đóng cắt.} Đếm cạnh theo từng khóa $\ell$:
+\[
+e_{\ell,k}=|s_{\ell,k}-s_{\ell,k-1}|,\qquad
+\sum_{r=k-W+1}^{k}e_{\ell,r}\le N_{\ell}^{\max}.
+\]
+Cần khai báo quy ước cạnh, chu kỳ đóng cắt, cửa sổ $WT_s$, dwell-time và giới hạn đỉnh riêng. Một giới hạn cạnh cửa sổ không tự đồng nghĩa với giới hạn tần số tức thời. Chính sách dự phòng phải tuân thủ lịch sử cửa sổ thật, không bắt đầu với lịch sử rỗng ở mỗi lần dự báo.
+
+Đặt $\mathcal A_k(z)$ là tập hành động thỏa ràng buộc điện, nhiệt và đóng cắt tại bước $k$. Chính sách $\pi_b(k,z)$ phải được xây dựng trên miền có thể hoàn thành yêu cầu đầu cuối; $\arg\min_s\max_j\hat T_j^+$ chỉ là ứng viên để tìm chính sách, chưa phải chứng chỉ.
+
+\section{Rainflow: quyết toán chu kỳ và phần dư đầu cuối}
+\subsection{Cách hạch toán dùng cho ràng buộc cứng}
+Giữ $C_{j,k}$ là tổng chi phí các chu kỳ đã quyết toán không thể thay đổi bởi tương lai. Hạch toán cả full-cycle và half-cycle ở biên khởi đầu đã được thuật toán chuẩn xuất ra. Khi cập nhật mẫu, thuật toán xác nhận điểm đảo chiều và cho
+\[
+C_{j,k+1}=C_{j,k}+c_j(z_k,s_k,w_k),\qquad c_j\ge0.
+\]
+Các đoạn còn trong stack chưa quyết toán được giữ trong $\mathcal H_j$. Tại cuối miền đánh giá, đóng endpoint tạm thời trên một bản sao của stack rồi tính các half-cycle còn lại, ký hiệu $r_j(\mathcal H_{j,N})$. Với hệ số mỏi cố định:
+\[
+D_j^{\rm cert}(N)=C_{j,N}+r_j(\mathcal H_{j,N}).
+\]
+Endpoint tạm thời dùng để xếp hạng hoặc dự báo không được ghi vào trạng thái đã quyết toán. Đoạn đơn điệu hiện tại chưa có điểm đảo chiều cũng phải được giữ qua mẫu cuối và hướng đi.
+
+\textbf{Qua nhiều hành trình.} Không flush stack và reset ở ga nếu ngân sách tính tới bảo trì. Có thể báo chênh lệch chi phí prefix-terminal giữa các hành trình theo một quy ước cố định, nhưng khi điều khiển vẫn mang nguyên stack sang hành trình sau. Nếu ngân sách chỉ xét một hành trình độc lập, phải khai báo quy ước trạng thái đầu và cuối. Dạng tốc độ trong P2.5 có thể dùng làm proxy xếp hạng; chưa dùng lời chứng minh phác thảo đó làm nền duy nhất cho hạch toán ràng buộc cứng.
+
+\subsection{Chứng chỉ tổn thương có điều kiện}
+Giả sử cho toàn bộ lịch sử liên quan đến stack:
+\[
+T_j^\star(t)=T_c+s_j(T_j^{\rm nom}(t)-T_c),\qquad
+0<s_j\le s_j^+,\quad T_c\text{ cố định},
+\]
+và $s_j$ cố định theo thời gian. Mô hình tỉ lệ này phải là giả thiết về quỹ đạo thật; dùng một cận tổn hao thay tổn hao thật không tự làm giả thiết đúng. Bất định hằng số thời gian nằm ngoài chứng chỉ này.
+
+Chuẩn hóa biên độ bằng $T_0>0$ và xét $\alpha>0$, $E_a>0$. Với cận chu kỳ thật $T_{m,c}^\star\le T_{\rm cap}$ (Kelvin), chọn hệ số cố định
+\[
+\bar\kappa_j=\frac{(s_j^+T_0)^\alpha}{A_j}
+\exp\!\left(-\frac{E_a}{k_BT_{\rm cap}}\right).
+\]
+Hạch toán chu kỳ nominal bằng $\bar\kappa_j(\Delta T_c^{\rm nom}/T_0)^\alpha$ và trọng số chuẩn $1$ hoặc $1/2$.
+\begin{proposition}[Cận mỏi với hệ số cố định]
+Trong các giả thiết trên, $D_j^\star(N)\le C_{j,N}+r_j(\mathcal H_{j,N})$.
+\end{proposition}
+\begin{proof}
+Phép affine tăng giữ thứ tự cực trị và pairing rainflow. Biên độ thật bằng $s_j\Delta T_c^{\rm nom}$; hệ số Arrhenius tăng theo nhiệt độ tuyệt đối. Do đó mỗi chi phí chu kỳ thật không vượt chi phí được hạch toán với $s_j^+$ và $T_{\rm cap}$. Cộng các chu kỳ và phần dư cho kết luận.
+\end{proof}
+
+Hệ số cố định hy sinh độ chặt nhưng tránh thay đổi giá trị các chu kỳ quá khứ khi cập nhật nhiệt độ trung bình/running maximum. Nếu dùng hệ số thích nghi chặt hơn, phải hạch toán phần đánh giá lại hoặc chứng minh bất đẳng thức nhất quán mới. Không gọi sai lệch đó là ``nhỏ'' nếu chưa có cận.
+
+Nếu $A_j$ chưa hiệu chuẩn, dùng ngân sách chuẩn hóa $B_j$ theo cùng một quy ước và gọi rõ là model-based normalized fatigue budget. Không diễn giải thành số chuyến tới hỏng hoặc kỳ bảo trì thật. Mỗi linh kiện có ngân sách riêng; dùng tổng tổn thương toàn bộ linh kiện có thể che mất một linh kiện vượt mức.
+
+\section{Định lý khả thi hữu hạn thay P2.21}
+Xét $z^+=f_k(z,s,w)$, $w\in\mathcal W_k(z)$, với cập nhật $c_j\ge0$ được chứng nhận như trên. $\mathcal W$ là mô hình nhu cầu/nhiễu đã khai báo, bao gồm cập nhật tiến độ và lịch sử; không tự mở rộng hoặc thu hẹp không nhất quán sau mỗi bước. Với tham số cố định chưa biết, có thể lưu tập tham số trong trạng thái thông tin; cho phép đối thủ đổi tham số mỗi bước là một relaxation bảo thủ phải được ghi rõ.
+
+Cho $\mathcal Z_N$ là tập thỏa yêu cầu hoàn thành nhiệm vụ. Định nghĩa miền hoàn thành dưới một chính sách dự phòng cụ thể:
+\[
+\mathcal V_N^b=\mathcal Z_N,
+\]
+\[
+\mathcal V_k^b=\{z:\pi_b(k,z)\in\mathcal A_k(z),\;
+f_k(z,\pi_b(k,z),w)\in\mathcal V_{k+1}^b\ \forall w\in\mathcal W_k(z)\}.
+\]
+Đặt chi phí phần còn lại, \emph{bao gồm phần dư rainflow đầu cuối}, bằng một cận $V_{j,k}^b$ thỏa
+\[
+V_{j,N}^b(z)\ge r_j(\mathcal H_{j,N}),
+\]
+\[
+V_{j,k}^b(z)\ge\sup_{w\in\mathcal W_k(z)}
+\{c_j(z,\pi_b(k,z),w)+V_{j,k+1}^b(f_k(z,\pi_b(k,z),w))\}.
+\]
+Đây là bất đẳng thức Bellman đủ cho tính nhất quán; không cần đẳng thức như bản cũ. Với dự báo tất định chính xác có thể dùng đẳng thức. Với cận xấp xỉ phải xác minh bất đẳng thức này, kể cả sai số tính toán.
+
+\begin{theorem}[Khả thi đệ quy trên miền có chứng chỉ]
+Giả sử $z_0\in\mathcal V_0^b$, $C_{j,0}+V_{j,0}^b(z_0)\le B_j$ cho mọi $j$, và các cận trên hợp lệ. Tại bước $k$, chỉ chọn $s$ thỏa $s\in\mathcal A_k(z_k)$ và, với mọi $w\in\mathcal W_k(z_k)$,
+\[
+z^+=f_k(z_k,s,w)\in\mathcal V_{k+1}^b,
+\qquad C_{j,k}+c_j(z_k,s,w)+V_{j,k+1}^b(z^+)\le B_j.
+\]
+Khi đó tập hành động được chấp nhận luôn chứa $\pi_b(k,z_k)$; mọi quỹ đạo được chứng nhận thỏa an toàn nhiệt tại mẫu, ràng buộc đóng cắt/phục vụ đã khai báo, yêu cầu đầu cuối và $D_j^\star(N)\le B_j$ trong phạm vi mô hình chứng chỉ mỏi.
+\end{theorem}
+\begin{proof}
+Nếu $z_k\in\mathcal V_k^b$, định nghĩa miền bảo đảm hành động dự phòng thuộc $\mathcal A_k$ và mọi trạng thái kế tiếp thuộc $\mathcal V_{k+1}^b$. Bất đẳng thức Bellman cùng $C_{j,k}+V_{j,k}^b\le B_j$ cho điều kiện ngân sách của hành động dự phòng. Mọi hành động được chấp nhận cho $C_{j,k+1}+V_{j,k+1}^b\le B_j$ và giữ trạng thái trong miền tiếp theo. Quy nạp tới $N$ cho $C_{j,N}+r_j\le B_j$, còn $z_N\in\mathcal Z_N$ bảo đảm hoàn thành nhiệm vụ. Dùng cận mỏi và cận nhiệt để kết thúc.
+\end{proof}
+
+Định lý không khẳng định mọi trạng thái ban đầu đều khả thi. Nút thắt triển khai là dựng $\pi_b$, chứng nhận $\mathcal V^b$ và tính cận $V^b$ đủ nhanh; chỉ viết định nghĩa truy hồi chưa giải quyết được bài toán này. Một backup schedule tiền tính với miền tube và lookup bảo thủ là phương án triển khai cần kiểm chứng. Nếu thay chính sách hoặc hộp mô hình online, chỉ chuyển khi chứng chỉ mới thỏa các điều kiện ở trạng thái hiện tại; nếu không, giữ chứng chỉ đang hợp lệ.
+
+\subsection{Dự trữ và cập nhật ở vòng chậm}
+Để tránh coi phần dư bằng không tại cuối nhiệm vụ, đặt
+\[
+R_b(k)=\min_j\frac{B_j-C_{j,k}}{V_{j,k}^b(z_k)}.
+\]
+Nếu $V=0$ và $B-C\ge0$, quy ước dự trữ linh kiện bằng $+\infty$; nếu $B-C<0$, trạng thái không khả thi. Dùng trực tiếp bất đẳng thức ngân sách để quyết định, không chia số nhỏ. Ở cuối nhiệm vụ $V_N$ chứa phần dư, nên không tự đặt bằng không.
+
+Nếu cập nhật dự trữ mỗi $100$ ms--$1$ s nhưng chọn vectơ mỗi $200\,\mu$s, phải kiểm ràng buộc ở mỗi bước nhanh bằng cận tăng chi phí trong khoảng giữ mẫu, hoặc chứng nhận cả chuỗi hành động của khoảng đó. Chứng minh theo bước nhanh không tự áp dụng cho một reserve bị giữ cố định ở vòng chậm. Ngân sách thời gian tính phải bao gồm kiểm miền và cost-to-go, không chỉ hai cập nhật mỗi nhánh của bộ lọc bao.
+
+\section{Kiểm tra đã chạy và ý nghĩa}
+Mã: \texttt{P2\_kiemtoan/validate\_p2.py}; kết quả: \texttt{results.json}; seed $20261014$. Đối chiếu rainflow với thư viện phiên bản $3.2.0$ được lưu cùng gói. Với chuỗi hai mẫu, thư viện bỏ endpoint cuối; adapter thêm một mẫu plateau để giữ quy ước half-cycle, không sửa mã vendor.
+
+\begin{center}\small
+\begin{tabular}{p{8.5cm}r}
+\toprule
+Kiểm tra & Kết quả \\
+\midrule
+Phản ví dụ P2.23 & $9\to9.41$ \\
+Bộ lọc bao, tham số thật cố định trong hộp & $1{,}000{,}000$ bước đạt \\
+Tập bất biến từng nhánh & $800{,}000$ nhánh đạt \\
+Cận tổng nhiệt dưới hộp bất biến & $200{,}000$ bước đạt \\
+Rainflow streaming so với thư viện trên mọi prefix & $64{,}120$ đối chiếu đạt \\
+Sai số tương đối lớn nhất của rainflow & $5.20\times10^{-16}$ \\
+Cận mỏi dưới sai số tỉ lệ cố định & $500$ quỹ đạo đạt \\
+Miền backup hữu hạn trên mô hình vô hướng & $16{,}384$ chuỗi duyệt \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Kiểm tra rainflow dùng $\alpha\in\{2,4,4.8,5\}$, plateau, chuỗi đơn điệu, nested cycles và $200$ chuỗi ngẫu nhiên. Với chuỗi $(0,10,0)$ và $\alpha=4.8$, reset tại ranh giới sau mẫu $10$ làm mất $50\%$ tổn thương theo quy ước thử. Kết quả kiểm phần mềm, không chứng minh mô hình mỏi đúng trên module thật và không tự chứng minh bổ đề dạng tốc độ P2.5 trong mọi trường hợp.
+
+Mô hình nhiệm vụ minh họa dùng $14$ bước, hai mức tổn hao, một nhánh nhiệt, không có bất định, giới hạn $2$ cạnh trong cửa sổ $4$ bước và yêu cầu ít nhất $6$ hành động phục vụ cao. Có $119$ chuỗi thỏa nhiệt/đóng cắt/phục vụ. Chính sách dự phòng được dựng bằng duyệt toàn bộ và chọn completion có tổn thương đầu cuối nhỏ nhất cho từng prefix. Ngân sách chuẩn hóa $1.0195473$; điều khiển chọn được quỹ đạo có tổn thương $0.9773666$, có $2$ lần chọn khác hành động dự phòng, tập chấp nhận không rỗng ở cả $14$ bước. Ngoài quỹ đạo này, kiểm hành động backup và cost-to-go trên toàn bộ $270$ prefix chưa kết thúc thuộc miền ngân sách đều đạt. Ngân sách là quantile thiết kế của ví dụ, không là tham số bảo trì thực. Duyệt toàn bộ không phù hợp thời gian thực và ví dụ này không phải phép thử E4 hay mô phỏng 650 kW.
+
+\section{Giao thức E4 và cổng quyết định trước HIL}
+\textbf{Mục tiêu E4.} Tìm điều kiện mà ràng buộc ngân sách theo hành trình mang lại lợi ích vượt điều khiển nhiệt được chỉnh tốt. Không chọn một ví dụ duy nhất rồi tuyên bố ưu thế phổ quát.
+
+\textbf{Cấu hình cố định.} 3L-NPC Si-IGBT, mô hình điện--nhiệt công khai, $T_s=200\,\mu$s; giới hạn đóng cắt mục tiêu $1500$ Hz chỉ được chốt sau khi xác nhận datasheet và quy ước tần số. Tính tổn hao chuyển mạch theo cạnh, đưa năng lượng qua động học nhiệt; không cộng $pR$ tức thời cho nhánh vỏ--coolant chậm.
+
+\textbf{Baseline.} B0: MPC bám dòng thông thường dưới cùng các giới hạn vật lý; B1: cân bằng nhiệt; B2: cận nhiệt cứng; B3: proxy nhiệt/rào chắn được tối ưu trên tập tuning; B4: B3 cộng trạng thái rainflow, miền backup và ngân sách cứng. Các baseline cùng tập vectơ, mô hình tổn hao, giới hạn đóng cắt, điện áp trung tính và yêu cầu phục vụ. So ở cùng sai số bám hoặc cùng mức hoàn thành nhiệm vụ; dùng đường Pareto nếu không thể ghép một điểm.
+
+\textbf{Thiết kế kịch bản.} Quét ngân sách ban đầu quanh ngưỡng backup khả thi; đặt tải tăng tốc liên tiếp ở cuối nhiệm vụ; quét nhiệt coolant, độ rộng hộp và lịch sử rainflow ban đầu. Chọn tham số/tuning trên nhóm nhiệm vụ riêng rồi đánh giá trên nhiệm vụ chưa dùng tuning. Mọi trường hợp không khả thi ban đầu phải báo riêng; không tính thành thất bại điều khiển hay loại âm thầm.
+
+\textbf{Chỉ số.} Tổn thương từng linh kiện và linh kiện giới hạn; vi phạm nhiệt tại mẫu và đỉnh trong mẫu; số cạnh theo cửa sổ và tần số theo quy ước; điện áp trung tính; sai số dòng/mô-men; tiến độ/độ trễ; mức giảm tải; số lần backup; slack ngân sách; độ bảo thủ $V^b$; thời gian chạy xấu nhất, bộ nhớ stack và tài nguyên FPGA.
+
+\textbf{Ablation.} B4 bỏ bộ nhớ rainflow; B4 dùng giới hạn một bước thay miền backup; B4 chỉ trọng số mềm thay ngân sách cứng; B4 dùng mô hình nominal thay bao nhiệt. Không bỏ ràng buộc bảo vệ trên HIL để tạo vi phạm; ablation không an toàn chỉ chạy mô phỏng có nhãn.
+
+\textbf{Cổng quyết định.} Tiếp tục HIL khi (i) miền ban đầu và backup được chứng nhận cho cấu hình thật, (ii) so sánh giữ cùng giới hạn vật lý và phục vụ, (iii) thấy lợi ích ngân sách/khả thi ngoài tập tuning hoặc có kết quả âm được phân tích rõ, và (iv) có thời gian chạy đo được phù hợp. Nếu chỉ thấy giảm biên độ nhiệt giống B3, thu hẹp tuyên bố đóng góp và báo trung thực. Ngưỡng cải thiện kỹ thuật do nhóm chốt trước đánh giá, không chọn sau khi xem kết quả.
+
+\section{Dữ liệu, phụ thuộc thực tế và việc còn lại}
+Dataset Zhang et al., Scientific Data (2022), DOI \href{https://doi.org/10.1038/s41597-022-01349-8}{10.1038/s41597-022-01349-8}, cung cấp giờ đến/đi, trễ tàu, khoảng cách và thời tiết. Không coi đó là log tốc độ--mô-men đo trực tiếp. Dựng mission cần khối lượng đoàn tàu, hệ số lực cản, độ dốc, giới hạn tốc độ/gia tốc, công suất và phân bổ tải tới động cơ; dữ liệu thiếu được công bố thành giả thiết và quét độ nhạy. Khi giảm tải phải chạy lại động học nhiệm vụ, không giữ hồ sơ nhiệt cũ rồi tuyên bố đúng giờ.
+
+Trong workspace đã có đề cương và số liệu tóm tắt 650 kW, nhưng lần kiểm toán này chưa xác lập một simulator P2 650 kW tái lập được với cận bao, giới hạn đóng cắt và backup đúng khung mới. Không dùng lại hệ số tăng tuổi thọ hay phần trăm giảm tổn thương cũ để điền abstract. Cần simulator, module/datasheet, thông số máy và nền tảng HIL cụ thể trước các tuyên bố ứng dụng.
+
+\begin{enumerate}
+\item Hoàn thành adapter điện--tổn hao--nhiệt và cấu trúc trạng thái của simulator P2; kiểm phép cân bằng năng lượng và mô hình dẫn/diode ở kéo và hãm.
+\item Dựng backup schedule/tube hoặc oracle ngoại tuyến cho mission thật; chứng nhận miền và cost-to-go bảo thủ. Đánh giá chi phí tính trước khi chọn triển khai FPGA.
+\item Chạy B0--B4 và E4 dưới cùng giới hạn; báo kết quả trên từng linh kiện, đặc biệt diode clamp và pha hãm.
+\item Đánh giá sai số không tỉ lệ như kiểm tra stress ngoài chứng chỉ; báo vi phạm, không gọi đó là bảo đảm toàn hộp cho tổn thương.
+\item Sau khi có kết quả và deadline khả thi, triển khai controller-HIL. Chưa có thí nghiệm phần cứng/HIL trong gói kiểm toán này.
+\end{enumerate}
+
+\section{Các sửa đổi cần áp vào đề cương cũ}
+\begin{itemize}
+\item P2.23: rút chứng minh dựa trên cực đại của tổng; thay bằng tập nhánh hoặc miền hữu hạn trên trạng thái mở rộng.
+\item P2.21: thay ``never empty'' vô điều kiện bằng ``recursively feasible on a certified initial domain''; dùng bất đẳng thức Bellman và phần dư đầu cuối.
+\item P2.19: backup phải đáp ứng phục vụ và lịch sử đóng cắt, không chỉ cực tiểu nhiệt một bước; lưu stack rainflow.
+\item P2.16: nói rõ scale cố định trên lịch sử chu kỳ, coolant và time constants; cận tổn hao không tự tạo affine scaling.
+\item C1/P2.5: hạch toán ràng buộc dùng thuật toán chu kỳ và residue đã đối chiếu; phát biểu dạng tốc độ chỉ sau chứng minh đầy đủ quy tắc closure và endpoint.
+\item Abstract/C4/C6: C4 là định lý có điều kiện; C6 là công việc chưa làm. Không viết ``In HIL experiments ...'' như kết quả đã có.
+\item G3/G4: thay ``biên nhỏ cần chứng minh'' bằng nhiệm vụ xây cận Bellman hợp lệ và miền backup có lịch sử đóng cắt; không chỉ kiểm $p_{\min}$.
+\end{itemize}
+
+\section*{Nguồn đối chiếu và giới hạn khảo sát}
+\begin{enumerate}
+\item Bản gốc: \texttt{P2\_DuTruVanHanh.pdf/.tex}, ngày 06/10/2026, mục 7.3--7.6 và giao thức kiểm chứng.
+\item Novak et al. (2021), FS-MPC Based Thermal Stress Balancing and Reliability Analysis for NPC Converters, DOI \href{https://doi.org/10.1109/OJPEL.2021.3057577}{10.1109/OJPEL.2021.3057577}.
+\item Loew and Bottasso (2022), online rainflow counting with stress history in MPC, \href{https://wes.copernicus.org/articles/7/1605/2022/}{Wind Energy Science 7, 1605--1625}. Rainflow trong MPC có tiền lệ; không tuyên bố nó là mới.
+\item Zhang et al. (2022), dataset nêu trên; đã kiểm nội dung nguồn để xác định giới hạn dựng mission.
+\item Phần mềm đối chiếu: \texttt{rainflow 3.2.0}, metadata/license được giữ trong \texttt{P2\_kiemtoan/vendor}. Đây là đối chiếu thực thi với thuật toán cùng họ, không phải kiểm chứng độc lập mô hình vật lý.
+\end{enumerate}
+Chưa rà soát đầy đủ mọi công trình mới hoặc toàn bộ tài liệu Votava, Salazar, He, Qi. Tính mới của miền backup cho ứng dụng này cần kiểm tra tiếp trước khi chốt bài gửi tạp chí.
+\end{document}

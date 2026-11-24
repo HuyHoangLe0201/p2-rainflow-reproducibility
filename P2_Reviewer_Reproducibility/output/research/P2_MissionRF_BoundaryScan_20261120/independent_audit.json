@@ -1,0 +1,23 @@
+{
+  "case": "brake_+200bp",
+  "eligible": 15,
+  "hard_feasible": 9,
+  "tight_matches": 15,
+  "tight_hard_feasible": 9,
+  "tight_hard_and_thermal_same_as_main": true,
+  "hard_and_soft_pass_tight_band": true,
+  "nodes": 14,
+  "bellman_edges": 5,
+  "differing_thermal_hard_steps": 30145,
+  "max_work_difference_percent": {
+    "thermal": 0.0,
+    "soft": 0.0329791222855129,
+    "hard": 0.4243969218742502
+  },
+  "absolute_budget_margins": {
+    "thermal_over": 0.18693827342327385,
+    "soft_remaining": 0.16365618136255655,
+    "hard_remaining": 0.1487090272435676
+  },
+  "rf_batch_max_difference": 4.0678571622265736e-13
+}

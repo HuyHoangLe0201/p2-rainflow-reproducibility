@@ -1,0 +1,26 @@
+{
+  "profile": "late_traction_pulse",
+  "proposed_policy": [
+    2,
+    0,
+    0
+  ],
+  "proposed_RMS_A": 31.098846591059583,
+  "proposed_RF": 6.9202084846313054,
+  "proposed_actions_sha256": "52025f461a9c29d18624aa0639320b105383f8a8c319924a8e6bbeff3bbe8ab5",
+  "profile_sha256": "efb5f28529d56267ec58e151b7724438f537cc897a0b586b67ab786131649b4d",
+  "model_hash": "cfa6279e1c803ae7061889a1b207d3274f9c50880c53597a37e1177c57e6c4e5",
+  "budget": 6.738416227606914,
+  "proposed_service_pass": true,
+  "budget_pass": false,
+  "fallback_RF": 6.587491154594981,
+  "verified_fallback_steps": 150000,
+  "executed_sha256": "e3c93bf466896a2ce08859e188808321526f6a1a295a44ae36666986efcac939",
+  "manager_event": {
+    "step": 0,
+    "accepted": false,
+    "reason": "certificate_failed",
+    "backup_before": "980e5305a463af59b6b54a779488296b694e2a947a5d5271bed7486be2525467",
+    "backup_after": "980e5305a463af59b6b54a779488296b694e2a947a5d5271bed7486be2525467"
+  }
+}

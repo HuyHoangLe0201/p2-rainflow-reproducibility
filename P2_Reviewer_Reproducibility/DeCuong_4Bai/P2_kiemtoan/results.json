@@ -1,0 +1,80 @@
+{
+  "seed": 20261014,
+  "scope": "mathematical checks and scalar surrogate only",
+  "reference": "rainflow 3.2.0; software reference, not physical validation",
+  "P2_23_counterexample": {
+    "initial": [
+      9.0,
+      0.0
+    ],
+    "a": [
+      0.99,
+      0.01
+    ],
+    "R_times_p": [
+      0.5,
+      0.5
+    ],
+    "next": [
+      8.915000000000001,
+      0.495
+    ],
+    "claimed_cap": 9.0,
+    "actual_next_sum": 9.41
+  },
+  "envelope": {
+    "checks": 1000000,
+    "minimum_slack": 0.001322196121207717
+  },
+  "branchwise_invariance": {
+    "branch_checks": 800000,
+    "temperature_checks": 200000
+  },
+  "rainflow_memory": {
+    "prefix_checks": 64120,
+    "maximum_relative_error": 5.199033189022922e-16,
+    "boundary_reset_example": {
+      "whole": 63095.7344480193,
+      "reset_total": 31547.86722400965,
+      "undercount_fraction": 0.5
+    }
+  },
+  "fixed_scale_damage_certificate": {
+    "trajectories": 500,
+    "assumptions": "fixed s <= 1.2, constant coolant, true cycle means <= 430 K"
+  },
+  "mission_surrogate": {
+    "scope": "scalar surrogate, exhaustive backup-domain construction; not E4 or 650 kW",
+    "horizon": 14,
+    "paths_enumerated": 16384,
+    "valid_service_paths": 119,
+    "thermal_rejected": 3868,
+    "frequency_rejected": 11744,
+    "service_rejected": 653,
+    "window_length": 4,
+    "max_state_transition_edges_per_window": 2,
+    "required_high_actions": 6,
+    "normalized_budget": 1.0195473362943257,
+    "selected_terminal_damage": 0.9773665831730619,
+    "selected_actions": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1
+    ],
+    "minimum_admissible_candidates": 1,
+    "certified_prefixes_backup_checked": 270,
+    "deviations_from_backup": 2,
+    "minimum_possible_damage": 0.8483163307517873
+  }
+}

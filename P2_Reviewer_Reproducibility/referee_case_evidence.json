@@ -1,0 +1,60 @@
+{
+  "archive_sha256": "ebc82804d38379a841cf57a03e64e6e32293f316497e42246b4594760e3c31b3",
+  "B": 6.738416227606914,
+  "base": {
+    "thermal_policy": [
+      2,
+      0,
+      1
+    ],
+    "soft_policy": [
+      0,
+      0,
+      1
+    ],
+    "hard_policy": [
+      0,
+      0,
+      2
+    ],
+    "max_RF": [
+      6.925354501030188,
+      6.574760046244357,
+      6.589707200363346
+    ],
+    "RMS_A": [
+      30.941747279008897,
+      30.95967149116471,
+      30.954503181763183
+    ],
+    "reduction_pct": 4.846644321484361,
+    "RMS_increase_A": 0.012755902754285842,
+    "lambda_interval_interior_selects_hard_actions": [
+      0.016963144678701716,
+      0.15438107636691312
+    ],
+    "lambda_example": 0.08567211052280742
+  },
+  "replay": {
+    "accepted_s": 10.0,
+    "missing_s": 20.0,
+    "first_different_action_s": 22.077,
+    "vectors": 150000,
+    "different_vectors_vs_initial": 10670,
+    "RF_budget_margin": 0.1487090272435676,
+    "RF_batch_delta": 3.730349362740526e-13
+  },
+  "FCH2Rail": {
+    "matched": 15,
+    "within_budget": 0,
+    "min_RF": 7.439714457464483,
+    "excess_pct": 10.407463804096718,
+    "phase_seconds": {
+      "traction": 16.093,
+      "regeneration": 4.7832,
+      "idle": 9.123800000000001
+    },
+    "stretch": 6.466666666666667,
+    "rest_ref_RMS": 1.1300677852122891
+  }
+}
