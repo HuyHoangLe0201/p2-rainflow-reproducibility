@@ -1,75 +1,58 @@
 # P2 traction-inverter reproducibility
 
-Companion repository for *Switching Schedule Selection for Rail Traction Inverters under Per-Device Rainflow Budgets*. The package covers the deterministic three-level neutral-point-clamped (3L-NPC) inverter simulation, the matched-service comparisons, the backup-replacement test and the four-panel result figure.
+Code and data for *Switching Schedule Selection for Rail Traction Inverters under Per-Device Rainflow Budgets* by Huy Hoang Le and Kim-Anh Nguyen. The experiments use a simulated three-level neutral-point-clamped inverter.
 
-- [Online Resource 2](ESM_2.zip) is the verified archive. The [browsable copy](P2_Reviewer_Reproducibility/) contains the same files and SHA-256 values.
-- [Online Resource 1](ESM_1.pdf) is the supplementary note on electrothermal checks and numerical sensitivity. The [archive README](P2_Reviewer_Reproducibility/README.md) documents the provenance and scope of those checks.
+## Schedule catalogues
+
+| Dataset | Contents |
+| --- | --- |
+| [Original catalogue](P2_Reviewer_Reproducibility/output/research/P2_MissionRF_BoundaryScan_20261120/results.json) | 27 candidate policies per synthetic duty, with tracking, temperature, work and per-device rainflow charge |
+| [Expanded catalogue](P2_Reviewer_Reproducibility/expanded_results.json) | All 64 candidates for the main duty, including the original 27 |
+| [30 s FCH2Rail mapping](P2_Reviewer_Reproducibility/P2_PublicRail_FCH2Rail_20261122/results.json) and [36 s mapping](P2_Reviewer_Reproducibility/followup_20261126/fch36/results.json) | Catalogue and results for each mapped demand |
+| [Recorded switch vectors](P2_Reviewer_Reproducibility/output/research/P2_MissionRF_BoundaryScan_20261120/brake_+200bp_actions.npz) | Stored vectors for the three selectors in the main duty. The replay scripts regenerate the switching schedules. |
+
+The catalogues distinguish policy combinations from unique switching sequences. See the [model, scripts and data layout](P2_Reviewer_Reproducibility/README.md) for the service rule, additional tests and archived results.
 
 ## Reproduce the results
 
-These commands use PowerShell on Windows x86-64. The replay uses CPython **3.10.19** and a wheel lock with hashes. Start with that interpreter on your `PATH`. Anaconda's Windows x86-64 build was used for verification.
-
-### 1. Set up the pinned replay environment
+Use Windows x86-64 and CPython **3.10.19**. We verified the Anaconda build with the pinned wheels and hashes below. Start with that interpreter on the PowerShell path and clone from a short working directory.
 
 ```powershell
-git clone --branch p2-res-2026-11-24 https://github.com/HuyHoangLe0201/p2-rainflow-reproducibility.git
+git clone --branch p2-res-2026-11-27 https://github.com/HuyHoangLe0201/p2-rainflow-reproducibility.git
 Set-Location p2-rainflow-reproducibility
-python --version
-python -I -m venv .venv
-$replayPython = (Resolve-Path .\.venv\Scripts\python.exe).Path
-$archive = (Resolve-Path .\ESM_2.zip).Path
+$base = (Get-Command python -CommandType Application | Select-Object -First 1).Source
+if ((& $base --version) -ne "Python 3.10.19") { throw "Select CPython 3.10.19." }
+& $base -I -m venv .venv
+$Python = (Resolve-Path .\.venv\Scripts\python.exe).Path
 Set-Location P2_Reviewer_Reproducibility
-& $replayPython -I -m pip --isolated install --only-binary=:all: --require-hashes -r requirements-lock-win64.txt
-& $replayPython -I -m pip check
-$run = Join-Path ([IO.Path]::GetTempPath()) ('p2-' + [guid]::NewGuid().ToString('N'))
+& $Python -I -m pip --isolated install --only-binary=:all: --require-hashes -r requirements-lock-win64.txt
+& $Python -I -m pip check
+$run = Join-Path $env:TEMP ("p2-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $run | Out-Null
 $env:NUMBA_CACHE_DIR = Join-Path $run 'numba'
 ```
 
-Confirm that `python --version` prints `Python 3.10.19` before creating the environment. Keep the same PowerShell session and working directory for the commands below. Results go in the fresh directory `$run`. Numba compiles functions on the first run.
-
-### 2. Verify the main replay and schedule comparisons
+Keep this PowerShell session for the following commands. Results and the Numba compilation cache go into the new directory above.
 
 ```powershell
-& $replayPython -I -B verify_package.py --output (Join-Path $run 'verification')
-& $replayPython -I -B budget_thresholds.py . --output (Join-Path $run 'budget_thresholds.json')
-& $replayPython -I -B verify_referee_cases.py $archive (Join-Path $run 'audit.json')
+& $Python -I -B verify_package.py --output (Join-Path $run 'verification')
+& $Python -I -B budget_thresholds.py . --output (Join-Path $run 'thresholds.json')
+& $Python -I -B verify_referee_cases.py . (Join-Path $run 'audit.json')
+& $Python -I -B figures/build_color_result_figures.py . (Join-Path $run 'figures')
 ```
 
-The first command verifies the archive checksums and replays 150,000 switching vectors, including acceptance at 10 s and retention when the next proposal is absent at 20 s. It also checks the archived Appendix C and D records. The other commands recalculate library budget thresholds and check the replacement events, soft-penalty sensitivity and the archived FCH2Rail result. For the synthetic case with a 2% increase in braking-current demand, nine of the 15 service-matched policy combinations meet the budget.
+The verifier checks the file hashes and replays the 150,000 switching vectors in the main duty. The two archive checks recompute budget thresholds, verify the original backup test and check the FCH2Rail comparison. At the +2% braking-current demand, 9 of the 15 service-matched policies meet the budget. For the two FCH2Rail mappings, the corresponding counts are 0/15 and 0/10. The last command generates the two colour result figures as vector TikZ from the archived data.
 
-### 3. Regenerate the FCH2Rail comparison
+To replay the 64 policies and run the charge and sensitivity checks, follow the [extended commands](P2_Reviewer_Reproducibility/README.md#extended-numerical-evidence-27-november-2026). The [additional replay commands](P2_Reviewer_Reproducibility/README.md#glm-referee-follow-up-26-november-2026) cover the common backup, prefix rejection and 36 s mapping.
 
-```powershell
-$trajectory = 'P2_PublicRail_FCH2Rail_20261122/A Coruna-Ferrol-A Coruna_simulated_trajectory.csv'
-& $replayPython -B DeCuong_4Bai/P2_sim/mission_rf_public_rail.py --trajectory $trajectory --output (Join-Path $run 'fch2rail') --workers 4
-```
+## Supporting checks
 
-Expected result on the mapped demand: 27 policy combinations complete replay, 15 satisfy the inverter-level service rule, and none of those 15 meets the fixed rainflow budget. The minimum matched maximum device charge is 7.439714, against a budget of 6.738416. These counts apply to the evaluated library.
-
-### 4. Regenerate Figure 4
-
-Use the replay environment to regenerate the observations. The render uses a separate environment with CPython **3.12.14**, NumPy **2.2.4** and Matplotlib **3.10.1**. Make `python` resolve to CPython 3.12.14 for the rendering commands and recheck its version.
-
-```powershell
-$curves = Join-Path $run 'replay_curves.json'
-& $replayPython -I -B figures/collect_mission_curves.py . $curves
-```
-
-```powershell
-python --version
-$plotEnv = Join-Path $run 'plot-venv'
-python -I -m venv $plotEnv
-$plotPython = (Resolve-Path (Join-Path $plotEnv 'Scripts/python.exe')).Path
-& $plotPython -I -m pip install 'numpy==2.2.4' 'matplotlib==3.10.1'
-& $plotPython -I -B figures/plot_mission_curves.py $curves (Join-Path $run 'replay_curves.pdf')
-Get-FileHash -Algorithm SHA256 -LiteralPath $curves, 'figures/mission_curves.json'
-```
-
-Compare the observations with the [reference JSON](P2_Reviewer_Reproducibility/figures/mission_curves.json) and the plot with the [reference vector PDF](P2_Reviewer_Reproducibility/figures/mission_curves.pdf).
+- [Electrothermal package checks](P2_Reviewer_Reproducibility/DeCuong_4Bai/P2_kiemtoan/results.json), [source saturation](P2_Reviewer_Reproducibility/output/research/P2_SourceSaturation_20261115.json), [gain–budget sweep](P2_Reviewer_Reproducibility/output/research/P2_GainBudgetTradeoff_20261115.json), and [paired rainflow summaries](P2_Reviewer_Reproducibility/rf_mechanism_20261119/P2_RF_attribution_20261119.json). The source-redistribution diagnostics use a separate thermal model. The paired summary records the cycle endpoints and source-file hashes. Full-state trajectories for these diagnostics are outside the repository.
+- [Binary64 input-conversion audit](P2_Reviewer_Reproducibility/output/research/P2_MissionRF_Fine1e-20_20261122/), including the input grid, switch decisions and exact rounding thresholds. Use each case's specified conversion route when reproducing it.
+- [Recorded-sample charge enclosures](P2_Reviewer_Reproducibility/rf_enclosure_results.json), [thermal/modulation stress results](P2_Reviewer_Reproducibility/major_revision_results.json) and [desktop timings](P2_Reviewer_Reproducibility/pc_benchmark_results.json). These checks concern the declared model and recorded samples. Physical lifetime and deployment timing require separate validation.
 
 ## Data sources
 
-The bundled FCH2Rail trajectory is an unmodified simulated data file from Sebastian Herwartz-Polster and Florian Kühlkamp, German Aerospace Center (DLR), [Zenodo record 6359030](https://zenodo.org/records/6359030). It is distributed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled rainflow implementation retains its [vendor licence](P2_Reviewer_Reproducibility/DeCuong_4Bai/P2_sim/vendor/RAINFLOW_LICENSE.txt).
+The unmodified FCH2Rail trajectory is from Sebastian Herwartz-Polster and Florian Kühlkamp, German Aerospace Center (DLR). [Zenodo dataset](https://doi.org/10.5281/zenodo.6359030) · [CC BY 4.0 licence](https://creativecommons.org/licenses/by/4.0/)
 
-The SHA-256 of `ESM_2.zip` is `fdb2a3ce1314190e313c9be8a874f9a7b2720f7d450bd58c689b1c9cf3ceb51d`.
+The bundled rainflow implementation retains its [original licence](P2_Reviewer_Reproducibility/DeCuong_4Bai/P2_sim/vendor/RAINFLOW_LICENSE.txt).

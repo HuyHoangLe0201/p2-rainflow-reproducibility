@@ -40,12 +40,16 @@ research = "output/research"
 boundary = read_report(f"{research}/P2_MissionRF_BoundaryScan_20261120/results.json")
 variants = read_report(f"{research}/P2_MissionRF_FixedValidation_20261120/results.json")
 public = read_report("P2_PublicRail_FCH2Rail_20261122/results.json")
+public_36s = read_report("followup_20261126/fch36/results.json")
 budget = boundary["freeze"]["budget"]
 assert budget == variants["freeze"]["budget"] == public["parameters"]["budget"]
+assert public_36s["parameters"] == public["parameters"]
+assert public_36s["duration_s"] == 36.0 and public_36s["schedules_completed"] == 27
 reports = {
     "brake_+200bp": boundary["full"]["brake_+200bp"],
     **variants["results"],
     "FCH2Rail": public,
+    "FCH2Rail_36s": public_36s,
 }
 expected = {
     "brake_+200bp": (15, 9, "change"),
@@ -54,17 +58,28 @@ expected = {
     "late_traction_pulse": (12, 6, "retain"),
     "heavy": (3, 0, "refuse"),
     "FCH2Rail": (15, 0, "refuse"),
+    "FCH2Rail_36s": (10, 0, "refuse"),
 }
 def evaluate(name, report):
     catalogue = report["catalog"]
     assert len(catalogue) == 27 and len({tuple(p["policy"]) for p in catalogue}) == 27
     assert all(len(p["RF_per_device"]) == 30 and p["RF_max"] == max(p["RF_per_device"])
                for p in catalogue)
-    baseline = report["controllers"]["hard_thermal"]
     signed = [p for p in catalogue
               if p["service"]["traction"]["work_J"] > 0 > p["service"]["regeneration"]["work_J"]]
-    assert min(signed, key=tracking)["policy"] == baseline["policy"]
+    baseline = min(signed, key=tracking)
+    if name == "FCH2Rail_36s":
+        # The follow-up catalog records the thermal reference charge as a scalar.
+        assert baseline["RF_max"] == report["thermal_RF"]
+    else:
+        original_baseline = report["controllers"]["hard_thermal"]
+        assert baseline["policy"] == original_baseline["policy"]
+        assert baseline["service"] == original_baseline["service"]
     matched = [p for p in catalogue if service_matches(p, baseline)]
+    if name == "FCH2Rail_36s":
+        assert {tuple(p["policy"]) for p in matched} == {
+            tuple(p["policy"]) for p in catalogue if p["service_matched"]
+        }
     assert min(matched, key=tracking)["policy"] == baseline["policy"]
     def decision_at(cap):
         admitted = [p for p in matched if p["RF_max"] <= cap]
@@ -101,7 +116,7 @@ def evaluate(name, report):
 
 assert set(reports) == set(expected)
 results = {name: evaluate(name, report) for name, report in reports.items()}
-assert Counter(x["decision"] for x in results.values()) == {"retain": 2, "change": 1, "refuse": 3}
+assert Counter(x["decision"] for x in results.values()) == {"retain": 2, "change": 1, "refuse": 4}
 out = {"scope": "Archived catalogue postprocessing with strict 0.5% service matching",
        "budget": budget, "input_sha256": hashes, "results": results}
 args.output.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")

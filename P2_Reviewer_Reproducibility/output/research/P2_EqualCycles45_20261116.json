@@ -87632,5 +87632,5 @@
     "numerical_scope": "Float64 ODE,80digit sums only onrecorded float64ranges. Differences across native/tighter/37/epsilon runs are empirical,not intervalerrorbounds.",
     "inherited_method": "Sameactual-endpoint fourpointobserver andsame .02K materialrange diagnostic asstage28. No newcertificate orclaim ofphysical lifetime damage."
   },
-  "figure": "D:\\claudecode\\Grant_MPC\\output\\figures\\P2_EqualCycles45_20261116.png"
+  "figure": "output\\figures\\P2_EqualCycles45_20261116.png"
 }

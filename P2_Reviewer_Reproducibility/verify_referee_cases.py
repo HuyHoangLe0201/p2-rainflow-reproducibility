@@ -3,13 +3,20 @@ from zipfile import ZipFile
 import hashlib,json,math,sys
 
 package,out=map(Path,sys.argv[1:])
-prefix="P2_Reviewer_Reproducibility/"
-with ZipFile(package) as z:
-    assert z.testzip() is None
-    read=lambda name:json.loads(z.read(prefix+name))
-    base=read("output/research/P2_MissionRF_BoundaryScan_20261120/results.json")
-    replay=read("output/research/P2_MissionRF_Midmission_20261122/results.json")
-    public=read("P2_PublicRail_FCH2Rail_20261122/results.json")
+case_files = (
+    "output/research/P2_MissionRF_BoundaryScan_20261120/results.json",
+    "output/research/P2_MissionRF_Midmission_20261122/results.json",
+    "P2_PublicRail_FCH2Rail_20261122/results.json",
+)
+if package.is_dir():
+    base, replay, public = (json.loads((package / name).read_bytes()) for name in case_files)
+    provenance = {"checksum_manifest_sha256": hashlib.sha256((package / "SHA256SUMS.txt").read_bytes()).hexdigest()}
+else:
+    prefix = "P2_Reviewer_Reproducibility/"
+    with ZipFile(package) as archive:
+        assert archive.testzip() is None
+        base, replay, public = (json.loads(archive.read(prefix + name)) for name in case_files)
+    provenance = {"archive_sha256": hashlib.sha256(package.read_bytes()).hexdigest()}
 case=base["full"]["brake_+200bp"]
 freeze=base["freeze"]
 B=freeze["budget"]
@@ -66,7 +73,7 @@ m2,y2,t2=matching(public)
 assert (len(m2),len(y2),len({p["actions_sha256"] for p in m2}))==(15,0,12)
 pmin=min(p["RF_max"] for p in m2)
 assert pmin==min(p["RF_max"] for p in public["catalog"])
-payload={"archive_sha256":hashlib.sha256(package.read_bytes()).hexdigest(),
+payload={**provenance,
  "B":B,"base":{"thermal_policy":thermal["policy"],"soft_policy":soft(1)["policy"],"hard_policy":h["policy"],
           "max_RF":[p["RF_max"] for p in (thermal,soft(1),h)],"RMS_A":[p["rms_A"] for p in (thermal,soft(1),h)],
           "reduction_pct":100*(1-h["RF_max"]/thermal["RF_max"]),"RMS_increase_A":h["rms_A"]-thermal["rms_A"],

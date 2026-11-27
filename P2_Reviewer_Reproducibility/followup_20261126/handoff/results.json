@@ -1,0 +1,256 @@
+{
+  "status": "PASS",
+  "phase_limits_s": [
+    0,
+    14.0,
+    20.0,
+    30
+  ],
+  "model_feasible": 27,
+  "matched": 6,
+  "budget_feasible": 6,
+  "pairs_exercisable": 9,
+  "freeze": {
+    "budget": 6.738416227606914,
+    "penalty_weight": 1.0,
+    "soft_MSE_reference_A2": 958.0150930303596,
+    "soft_RF_reference": 6.908540936914964,
+    "reference_profile_sha256": "77cdc3150a319598b81ad25f35c46863f6ed026710f8d9a299506ec1ac2c3253",
+    "reference_report_sha256": "709a7a350a8f4a1b7f5123d2df21bc400cc1079faa430008f40bf24b4b0dd831"
+  },
+  "profile_sha256": "e3be2e09f508e93bfe8ab098b1b561f00aad01f83cb872dae8e90b12ae749efc",
+  "model_sha256": "fc8dca541cd1107b977ec909bd87bb810233fa7e8be02893ddd70030679770fb",
+  "first_difference_step": 50007,
+  "first_difference_s": 10.0014,
+  "differences_before_20": 19946,
+  "changed_vectors": 69944,
+  "executed_steps": 150000,
+  "events": [
+    {
+      "step": 50000,
+      "accepted": true,
+      "reason": "certificate_committed",
+      "backup_before": "5080a59b40d4776addca7687e9c030462cea9220256cb322a83ee0f20733122c",
+      "backup_after": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762"
+    },
+    {
+      "step": 100000,
+      "accepted": false,
+      "reason": "executed_prefix_mismatch",
+      "backup_before": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762",
+      "backup_after": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762"
+    }
+  ],
+  "missing_events": [
+    {
+      "step": 50000,
+      "accepted": true,
+      "reason": "certificate_committed",
+      "backup_before": "5080a59b40d4776addca7687e9c030462cea9220256cb322a83ee0f20733122c",
+      "backup_after": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762"
+    },
+    {
+      "step": 100000,
+      "accepted": false,
+      "reason": "planner_unavailable",
+      "backup_before": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762",
+      "backup_after": "602fd7ab4d5a59994e6a8bd9afb0f092dd517eacd02cf5bd5e5d41f07a13e762"
+    }
+  ],
+  "initial": {
+    "policy": [
+      1,
+      1,
+      0
+    ],
+    "actions_sha256": "3967d56d2721924477afe1617830a89274475d41ec4ff5868efe466d60529e5f",
+    "rms_A": 27.042655747446084,
+    "service": {
+      "traction": {
+        "steps": 70000,
+        "duration_s": 14.0,
+        "rms_A": 32.37091023502601,
+        "work_J": 4858262.368490512,
+        "reference_work_J": 4846222.284968597,
+        "work_change_vs_thermal_percent": 0.04592191268153086
+      },
+      "regeneration": {
+        "steps": 30000,
+        "duration_s": 6.0,
+        "rms_A": 34.78308403561293,
+        "work_J": -2161940.552070084,
+        "reference_work_J": -2167629.7311099996,
+        "work_change_vs_thermal_percent": 0.17965141982382327
+      },
+      "idle": {
+        "steps": 50000,
+        "duration_s": 10.0,
+        "rms_A": 0.9857826260249544,
+        "work_J": 0.0,
+        "reference_work_J": 0.0,
+        "work_change_vs_thermal_percent": null
+      }
+    },
+    "peak_bound_C": 93.68081875417636,
+    "nominal_peak_C": 74.28919589975942,
+    "neutral_point_peak_V": 31.005060726977877,
+    "max_window_edges": 30,
+    "peak_current_A": 549.9602185332526,
+    "peak_error_A": 130.77747566432868,
+    "RF_per_device": [
+      2.214772543163033,
+      2.4938476293971985,
+      2.4561589282268423,
+      2.276094616549471,
+      5.267184795623981,
+      1.2931858823367675,
+      1.1495622687420761,
+      4.884959639179997,
+      4.242375021434567,
+      4.335853851205754,
+      2.270913666771737,
+      2.536622992337211,
+      2.4173806099485033,
+      2.2308112188021028,
+      4.9527445590633,
+      1.1980195157538192,
+      1.2471345546983905,
+      5.056926250439992,
+      4.285271136550499,
+      4.162514792994553,
+      2.173697447734578,
+      2.3835688874959082,
+      2.5804006619806312,
+      2.1846391414896265,
+      4.923078104533656,
+      1.1933452680798708,
+      1.1062394822277954,
+      4.839053556211215,
+      4.22614453280535,
+      4.274224483075021
+    ],
+    "RF_max": 5.267184795623981,
+    "limiting_device": 5,
+    "budget_pass": true,
+    "RF_over_budget": 0.7816651001825355,
+    "terminal": {
+      "pass_terminal": true,
+      "checks": {
+        "zero_drop_at_lookup_index0": true,
+        "current_in_deadband": true,
+        "old_switch000": true,
+        "window_valid": true,
+        "NP_current_and_idle_limit": true,
+        "thermal_nonnegative_and_safe": true
+      },
+      "idle_NP_limit_V": 2.1678969126551872,
+      "initial_peak_bound_C": 40.223449395070396,
+      "max_current_A": 1.350957579394069e-93,
+      "decay_a": 0.9957081611085538
+    }
+  },
+  "replacement": {
+    "policy": [
+      1,
+      0,
+      0
+    ],
+    "actions_sha256": "2cd7822845605306e558fa75803b414505f4d775b68e7749f38c6ca28d3f9cc1",
+    "rms_A": 27.030698241457568,
+    "service": {
+      "traction": {
+        "steps": 70000,
+        "duration_s": 14.0,
+        "rms_A": 32.38913297466009,
+        "work_J": 4856032.385538638,
+        "reference_work_J": 4846222.284968597,
+        "work_change_vs_thermal_percent": 0.0
+      },
+      "regeneration": {
+        "steps": 30000,
+        "duration_s": 6.0,
+        "rms_A": 34.68634819810392,
+        "work_J": -2165831.4991092253,
+        "reference_work_J": -2167629.7311099996,
+        "work_change_vs_thermal_percent": 0.0
+      },
+      "idle": {
+        "steps": 50000,
+        "duration_s": 10.0,
+        "rms_A": 1.1882687742460771,
+        "work_J": 0.0,
+        "reference_work_J": 0.0,
+        "work_change_vs_thermal_percent": null
+      }
+    },
+    "peak_bound_C": 95.16345212059747,
+    "nominal_peak_C": 75.38527471127917,
+    "neutral_point_peak_V": 38.0902967480299,
+    "max_window_edges": 30,
+    "peak_current_A": 549.9602185332526,
+    "peak_error_A": 144.4275353973805,
+    "RF_per_device": [
+      2.210982178191304,
+      2.55213690150546,
+      2.485714466299676,
+      2.2783153608552227,
+      5.312091013964773,
+      1.302553851396498,
+      1.1950586395859077,
+      5.102294407442872,
+      4.249914711008071,
+      4.316346621953877,
+      2.274918951017517,
+      2.5984931830639924,
+      2.4902219266891006,
+      2.2271885562584637,
+      5.116332617399132,
+      1.220519171297466,
+      1.494024900604779,
+      5.719669634314059,
+      4.29643932825042,
+      4.168847268306467,
+      2.1745378943044833,
+      2.4105624899547147,
+      2.6454635905809227,
+      2.1809028040186442,
+      5.330392170192551,
+      1.2625918707806778,
+      1.1656659717740447,
+      5.065596955028256,
+      4.22164737439344,
+      4.269331411359815
+    ],
+    "RF_max": 5.719669634314059,
+    "limiting_device": 18,
+    "budget_pass": true,
+    "RF_over_budget": 0.8488151282316003,
+    "terminal": {
+      "pass_terminal": true,
+      "checks": {
+        "zero_drop_at_lookup_index0": true,
+        "current_in_deadband": true,
+        "old_switch000": true,
+        "window_valid": true,
+        "NP_current_and_idle_limit": true,
+        "thermal_nonnegative_and_safe": true
+      },
+      "idle_NP_limit_V": -7.972537146336421,
+      "initial_peak_bound_C": 40.226701056341035,
+      "max_current_A": 1.5676607135806223e-93,
+      "decay_a": 0.9957081611085538
+    }
+  },
+  "executed_sha256": "2cd7822845605306e558fa75803b414505f4d775b68e7749f38c6ca28d3f9cc1",
+  "missing_sha256": "2cd7822845605306e558fa75803b414505f4d775b68e7749f38c6ca28d3f9cc1",
+  "batch_RF": {
+    "policy": [
+      1,
+      0,
+      0
+    ],
+    "chips": 30,
+    "maximum_absolute_delta": 8.970602038971265e-14
+  },
+  "script_sha256": "b3609e07b36719734304df67270d3254dcc769fcf390881d30baad8378d4742b"
+}
